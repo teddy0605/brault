@@ -1,5 +1,7 @@
 # Brault
 
+> **Note:** This package is not yet available on PyPI. PyPI publishing is pending. See below for local installation instructions.
+
 Brault is a Python package for backing up and restoring KV2 secrets from HashiCorp Vault. It supports both plain text (JSON/YAML) and encrypted backups.
 
 ## Features
@@ -13,7 +15,27 @@ Brault is a Python package for backing up and restoring KV2 secrets from HashiCo
 ## Installation
 
 ```bash
-pip install brault
+pip install brault  # Not yet available on PyPI
+```
+
+---
+
+## Install Locally (Development)
+
+You can install Brault locally for development or testing:
+
+```bash
+# From the project root
+git clone https://github.com/teddy0605/brault.git
+cd brault
+pip install -e .
+```
+
+Or, after building the package:
+
+```bash
+python -m build
+pip install dist/brault-<version>.whl
 ```
 
 ## Usage
