@@ -6,7 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "brault"
 version = "0.1.0"
 description = "A tool for backing up and restoring data from HashiCorp Vault"
-readme = "file: README.md"
+readme = "README.md"
+license = {file = "LICENSE"}
 authors = [
     { name = "teddy0605", email = "me@teddy.website" }
 ]
@@ -17,18 +18,25 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "certifi==2024.2.2",
-    "cffi==1.16.0",
-    "charset-normalizer==3.3.2",
-    "cryptography==42.0.5",
-    "hvac==2.1.0",
-    "idna==3.6",
-    "pycparser==2.21",
-    "PyYAML==6.0.1",
-    "requests==2.31.0",
-    "urllib3==2.2.1",
+    "certifi>=2024.2.2",
+    "cffi>=1.16.0",
+    "charset-normalizer>=3.3.2",
+    "cryptography>=42.0.5",
+    "hvac>=2.1.0",
+    "idna>=3.6",
+    "pycparser>=2.21",
+    "PyYAML>=6.0.1",
+    "requests>=2.31.0",
+    "urllib3>=2.2.1",
 ]
 requires-python = ">=3.6"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "build",
+    "twine"
+]
 
 [project.urls]
 homepage = "https://github.com/teddy0605/brault"
