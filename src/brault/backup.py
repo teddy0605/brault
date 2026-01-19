@@ -31,17 +31,26 @@ class BackupManager:
             logging.debug(f"Listing secrets at: {mount_point}{path}, found: {secrets_list['data']['keys']}")
             for key in secrets_list['data'].get('keys', []):
                 full_path = f"{path}/{key}"
+                # hvac list_secrets keys often end with / for folders, but let's be robust
+                # If path was empty, full_path starts with /, strip it
+                if path == '':
+                    full_path = key
+
                 if key.endswith('/'):
                     logging.debug(f"{full_path} is a folder, going deeper.")
                     self._fetch_secrets_recursive(mount_point, full_path.rstrip('/'))
                 else:
                     logging.debug(f"{full_path} is a secret, fetching contents.")
                     self._fetch_secret(mount_point, full_path)
-        except Exception as e:
-            if "404" in str(e):
-                logging.error(f"This path does not exist or is a leaf (key-value pair)")
-            else:
-                logging.error(f"Failed to fetch secrets from {mount_point}/{path}: {e}")
+        except Exception:
+            # If listing fails, it might be a direct path to a secret
+            try:
+                # remove leading slash if present, hvac doesn't like it sometimes
+                clean_path = path.lstrip('/')
+                logging.debug(f"Listing failed, attempting to fetch as single secret: {clean_path}")
+                self._fetch_secret(mount_point, clean_path)
+            except Exception as e:
+                logging.error(f"Failed to fetch secrets from {mount_point}/{path}. It's neither a listable path nor a readable secret. Error: {e}")
 
     def _fetch_secret(self, mount_point, path):
         try:
