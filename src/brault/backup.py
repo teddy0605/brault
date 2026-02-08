@@ -39,7 +39,13 @@ class BackupManager:
                     self._fetch_secret(mount_point, full_path)
         except Exception as e:
             if "404" in str(e):
-                logging.error(f"This path does not exist or is a leaf (key-value pair)")
+                if path:
+                    logging.debug(
+                        f"{mount_point}/{path} looks like a leaf; fetching the secret directly."
+                    )
+                    self._fetch_secret(mount_point, path)
+                else:
+                    logging.error("This path does not exist or is a leaf (key-value pair)")
             else:
                 logging.error(f"Failed to fetch secrets from {mount_point}/{path}: {e}")
 
