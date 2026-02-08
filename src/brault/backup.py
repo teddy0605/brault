@@ -1,6 +1,11 @@
 
 import logging
 
+try:
+    from hvac.exceptions import InvalidPath
+except Exception:  # pragma: no cover - hvac import guarded for runtime envs
+    InvalidPath = None
+
 class BackupManager:
     def __init__(self, client, output_format='json'):
         logging.debug("ENTERING BACKUP MANAGER")
@@ -38,8 +43,22 @@ class BackupManager:
                     logging.debug(f"{full_path} is a secret, fetching contents.")
                     self._fetch_secret(mount_point, full_path)
         except Exception as e:
-            if "404" in str(e):
-                logging.error(f"This path does not exist or is a leaf (key-value pair)")
+            is_invalid_path = False
+            if InvalidPath is not None and isinstance(e, InvalidPath):
+                is_invalid_path = True
+            elif getattr(e, "status_code", None) == 404:
+                is_invalid_path = True
+            elif "404" in str(e):
+                is_invalid_path = True
+
+            if is_invalid_path:
+                if path:
+                    logging.debug(
+                        f"{mount_point}/{path} looks like a leaf; fetching the secret directly."
+                    )
+                    self._fetch_secret(mount_point, path)
+                else:
+                    logging.error("This path does not exist or is a leaf (key-value pair)")
             else:
                 logging.error(f"Failed to fetch secrets from {mount_point}/{path}: {e}")
 
